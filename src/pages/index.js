@@ -19,6 +19,7 @@ export default function Home() {
   const [myDid, setMyDid] = useState(null);
   const [recipientDid, setRecipientDid] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [image, setImage] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [messageType, setMessageType] = useState("Secret");
@@ -37,11 +38,21 @@ export default function Home() {
     initWeb5();
   }, []);
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   const queryLocalProtocol = async (web5) => {
     return await web5.dwn.protocols.query({
       message: {
         filter: {
-          protocol: "https://sbm.hashnode.dev/health5app",
+          protocol: "https://sbm.hashnode.dev/health5",
         },
       },
     });
@@ -52,7 +63,7 @@ export default function Home() {
       from: did,
       message: {
         filter: {
-          protocol: "https://sbm.hashnode.dev/health5app",
+          protocol: "https://sbm.hashnode.dev/health5",
         },
       },
     });
@@ -77,11 +88,11 @@ export default function Home() {
 
   const defineNewProtocol = () => {
     return {
-      protocol: "https://sbm.hashnode.dev/health5app",
+      protocol: "https://sbm.hashnode.dev/health5",
       published: true,
       types: {
         secretMessage: {
-          schema: "https://example.com/health5schema",
+          schema: "https://example.com/secretMessageSchema",
           dataFormats: ["application/json"],
         },
         directMessage: {
@@ -243,6 +254,7 @@ export default function Home() {
       type: "Direct",
       recipientDid: recipientDid,
       imageUrl: imageUrl,
+      image: image,
     };
   };
 
@@ -256,6 +268,7 @@ export default function Home() {
       sender: myDid,
       type: "Secret",
       imageUrl: imageUrl,
+      image: image,
     };
   };
 
@@ -266,8 +279,8 @@ export default function Home() {
         from: myDid,
         message: {
           filter: {
-            protocol: "https://sbm.hasnode.dev/health5app",
-            schema: "https://example.com/directMessageSchema",
+            protocol: "https://sbm.hashnode.dev/health5app",
+            schema: "https://schema.org/directMessageSchema",
           },
         },
       });
@@ -298,7 +311,7 @@ export default function Home() {
       const response = await web5.dwn.records.query({
         message: {
           filter: {
-            protocol: "https://sbm.hasnode.dev/health5app",
+            protocol: "https://sbm.hashnode.dev/health5",
           },
         },
       });
@@ -404,7 +417,15 @@ export default function Home() {
               placeholder="Write health information/diagnosis here"
             />
             <div className={styles.imageContainer2}>
-              <PrivatePage />
+              <input
+                className={styles.input}
+                type="file"
+                placeholder="Upload a file or image(optional)"
+                id="file"
+                name="file"
+                onChange={(e) => handleFileChange(e)}
+                multiple
+              />
               <input
                 className={styles.input}
                 type="text"
