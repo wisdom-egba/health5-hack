@@ -1,11 +1,6 @@
-import type { Metadata } from "next";
 import React from "react";
 import "../styles/global.css";
 import { ThemeProvider } from "@/components/theme-provider";
-export const metadata: Metadata = {
-  title: "hello world",
-  description: "...",
-};
 
 export default function RootLayout({
   children,
